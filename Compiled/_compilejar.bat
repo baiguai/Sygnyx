@@ -1,0 +1,1 @@
+%~dp0..\..\java\jdk\bin\jar.exe -cfmv ../Release/nmxj.jar manifest.txt *.class

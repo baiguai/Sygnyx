@@ -1,0 +1,1 @@
+java -jar Sygnyx.jar
