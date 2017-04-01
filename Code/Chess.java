@@ -9,11 +9,11 @@ import java.lang.Math;
 */
 public class Chess
 {
-    private String x = "a,b,c,d,e,f,g,h";
-    private String y = "8,7,6,5,4,3,2,1";
-    private String white = "";
-    private String black = "";
-    private boolean blackTurn = false;
+    private static String x = "a,b,c,d,e,f,g,h";
+    private static String y = "8,7,6,5,4,3,2,1";
+    private static String white = "";
+    private static String black = "";
+    private static boolean blackTurn = false;
 
     public static ArrayList<String> Help(String cmd)
     {
@@ -21,7 +21,7 @@ public class Chess
 
         if (Functions.Match(cmd, "help chess"))
         {
-            output.add("Chess help...");
+            output.add("Chess Help:");
         }
 
         return output;
@@ -36,25 +36,29 @@ public class Chess
 
 
     // Process Messages
-    public ArrayList<String> ProcessMessage(String cmd)
+    public static ArrayList<String> ProcessMessage(String hostname, String cmd)
     {
+        boolean handled = false;
         ArrayList<String> output = new ArrayList<String>();
         String[] arr = cmd.split(" ");
 
         if (output.size() < 1)
         {
-            if (Functions.Match(cmd, "chess n"))
+            if (!handled && Functions.Match(cmd, "chess n"))
             {
+                handled = true;
                 Reset();
                 output = DrawBoard();
             }
-            if (Functions.Match(cmd, "chess brd"))
+            if (!handled && Functions.Match(cmd, "chess brd"))
             {
+                handled = true;
                 output = DrawBoard();
             }
 
-            if (Functions.Match(cmd, "chess mv"))
+            if (!handled && Functions.Match(cmd, "chess mv"))
             {
+                handled = true;
                 if (arr.length == 3)
                 {
                     output = Move(arr[2]);
@@ -64,6 +68,28 @@ public class Chess
                     output.add("Error!");
                 }
             }
+
+            if (!handled && Functions.Match(cmd, "chess help|chess ?"))
+            {
+                handled = true;
+                output.add("To view the chess help system, send me a private message: chess help");
+            }
+        }
+
+        return output;
+    };
+    public static ArrayList<String> ProcessPrivateMessage(String hostname, String cmd)
+    {
+        ArrayList<String> output = new ArrayList<String>();
+        String[] arr = cmd.split(" ");
+
+        if (output.size() < 1)
+        {
+            if (Functions.Match(cmd, "chess help|chess ?"))
+            {
+                Reset();
+                output = Help(cmd);
+            }
         }
 
         return output;
@@ -71,13 +97,13 @@ public class Chess
 
 
     // General Methods
-    public void Reset()
+    public static void Reset()
     {
         Black("ra8,nb8,bc8,qd8,ke8,bf8,ng8,rh8,pa7,pb7,pc7,pd7,pe7,pf7,pg7,ph7");
         White("Ra1,Nb1,Bc1,Qd1,Ke1,Bf1,Ng1,Rh1,Pa2,Pb2,Pc2,Pd2,Pe2,Pf2,Pg2,Ph2");
     };
 
-    public ArrayList<String> DrawBoard()
+    public static ArrayList<String> DrawBoard()
     {
         String[] xArr = X().split(",");
         String[] yArr = Y().split(",");
@@ -135,7 +161,7 @@ public class Chess
         return output;
     };
 
-    public ArrayList<String> Move(String cmd)
+    public static ArrayList<String> Move(String cmd)
     {
         ArrayList<String> output = new ArrayList<String>();
         String[] tmp = cmd.split("-");
@@ -189,7 +215,7 @@ public class Chess
     };
 
     // Ensure the move is valid
-    public boolean ValidMove(String piece, String start, String end)
+    public static boolean ValidMove(String piece, String start, String end)
     {
         boolean isValid = true;
         String[] xArr = X().split(",");
@@ -216,7 +242,7 @@ public class Chess
     };
 
     // Move the piece
-    public void MovePiece(boolean isBlack, String piece, String start, String end)
+    public static void MovePiece(boolean isBlack, String piece, String start, String end)
     {
         if (isBlack)
         {
@@ -227,7 +253,7 @@ public class Chess
             White(White().replaceAll(piece + start, piece + end));
         }
     };
-    public void WalkMove_RightAngle_Pawn(int startX, int startY, int endX, int endY)
+    public static void WalkMove_RightAngle_Pawn(int startX, int startY, int endX, int endY)
     {
         
     };
@@ -235,7 +261,7 @@ public class Chess
 
 
     // Valid Move Checks
-    public boolean ValidMove_Pawn(boolean isBlack, int startX, int startY, int endX, int endY)
+    public static boolean ValidMove_Pawn(boolean isBlack, int startX, int startY, int endX, int endY)
     {
         boolean isValid = true;
         String occ = Occupying_Color(endX, endY);
@@ -293,7 +319,7 @@ public class Chess
 
 
     // Right angle check
-    public boolean Is_RightAngle(int startX, int startY, int endX, int endY)
+    public static boolean Is_RightAngle(int startX, int startY, int endX, int endY)
     {
         boolean isRight = true;
 
@@ -303,7 +329,7 @@ public class Chess
     };
 
     // Diagonal check
-    public boolean Is_Diagonal(int startX, int startY, int endX, int endY)
+    public static boolean Is_Diagonal(int startX, int startY, int endX, int endY)
     {
         boolean isDiag = true;
 
@@ -316,7 +342,7 @@ public class Chess
     };
 
     // Knight move check
-    public boolean Is_KnightMove(int startX, int startY, int endX, int endY)
+    public static boolean Is_KnightMove(int startX, int startY, int endX, int endY)
     {
         boolean isKnMove = true;
 
@@ -335,7 +361,7 @@ public class Chess
     }
 
     // Distance
-    public int Move_Distance(int startX, int startY, int endX, int endY)
+    public static int Move_Distance(int startX, int startY, int endX, int endY)
     {
         // Assumes a diagonal or right move has been verified
         int distance = 0;
@@ -353,7 +379,7 @@ public class Chess
     };
 
     // Occupying Color
-    public String Occupying_Color(int x, int y)
+    public static String Occupying_Color(int x, int y)
     {
         String pos = XY_Notation(x, y);
         String occ = "";
@@ -373,7 +399,7 @@ public class Chess
     };
 
     // Take piece
-    public void TakePiece(boolean isBlack, int x, int y)
+    public static void TakePiece(boolean isBlack, int x, int y)
     {
         Functions.Output("Taking piece...");
 
@@ -415,7 +441,7 @@ public class Chess
     };
 
     // X, Y to position notation
-    public String XY_Notation(int x, int y)
+    public static String XY_Notation(int x, int y)
     {
         String[] xArr = X().split(",");
         String[] yArr = Y().split(",");
@@ -426,7 +452,7 @@ public class Chess
         return pos;
     };
     // Position notation to X, Y
-    public ArrayList<Integer> Notation_XY(String notation)
+    public static ArrayList<Integer> Notation_XY(String notation)
     {
         if (notation.length() > 2) notation = notation.substring(1); // There is a piece in there
         String x = notation.substring(0,1);
@@ -455,7 +481,7 @@ public class Chess
         return output;
     };
 
-    public String ListCleanup(String[] lst)
+    public static String ListCleanup(String[] lst)
     {
         String newList = "";
 
@@ -477,13 +503,13 @@ public class Chess
         ------------------------------------------------------------------------
         Property GET/SET.
     */
-    public String X() { return x; }
-    public String Y() { return y; }
-    public void White(String value) { white = value; }
-    public String White() { return white; }
-    public void Black(String value) { black = value; }
-    public String Black() { return black; }
+    public static String X() { return x; }
+    public static String Y() { return y; }
+    public static void White(String value) { white = value; }
+    public static String White() { return white; }
+    public static void Black(String value) { black = value; }
+    public static String Black() { return black; }
 
-    public void BlackTurn(boolean value) { blackTurn = value; }
-    public boolean BlackTurn() { return blackTurn; }    
+    public static void BlackTurn(boolean value) { blackTurn = value; }
+    public static boolean BlackTurn() { return blackTurn; }    
 };

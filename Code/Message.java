@@ -3,6 +3,8 @@ import org.jibble.pircbot.*;
 /*
     --[MESSAGE HANDLER]---------------------------------------------------------
     Handles all messages coming into the channel.
+
+    Adds user statements to the Chat table for random use later.
     ----------------------------------------------------------------------------
 */
 public class Message extends PircBot

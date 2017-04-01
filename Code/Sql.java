@@ -57,9 +57,10 @@ public class Sql
         sql += "INSERT INTO ";
         sql += "    Chat ( ";
         sql += "        Message, ";
-        sql += "        Contributor ";
+        sql += "        Contributor, ";
+        sql += "        AccessedCount ";
         sql += ") ";
-        sql += "SELECT '" + message + "', '" + nick + "' ";
+        sql += "SELECT '" + message + "', '" + nick + "', 1 ";
         sql += ";";
 
         return sql;

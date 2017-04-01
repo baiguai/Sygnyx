@@ -75,7 +75,6 @@ public class Irc
                         for (String ch : Channels())
                         {
                             bot.RandomIdleEvent(ch);
-                            bot.ClsUser().ClearAuth();
                         }
                     }
 

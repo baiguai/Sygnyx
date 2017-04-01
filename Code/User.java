@@ -3,7 +3,7 @@ import java.sql.*;
 import java.util.*;
 
 /*
-    USER
+    USER PLUGIN
     ----------------------------------------------------------------------------
     Handles user accounts and authentication.
     ----------------------------------------------------------------------------

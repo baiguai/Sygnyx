@@ -1,0 +1,82 @@
+import java.util.*;
+import java.lang.Math;
+
+/*
+    PLUGIN TEMPLATE
+    ----------------------------------------------------------------------------
+    Plugin description.
+    (All methods must be static)
+    ----------------------------------------------------------------------------
+*/
+public class Plugin
+{
+
+    public static ArrayList<String> Help(String cmd)
+    {
+        ArrayList<String> output = new ArrayList<String>();
+
+        if (Functions.Match(cmd, "plugin name help"))
+        {
+            output.add("Plugin Help:");
+        }
+
+        return output;
+    };
+
+
+    // Constructor
+    public Plugin()
+    {
+        // Initialization of DB etc
+    };
+
+
+    // Process Messages
+    public static ArrayList<String> ProcessMessage(String cmd)
+    {
+        boolean handled = false;
+        ArrayList<String> output = new ArrayList<String>();
+        String[] arr = cmd.split(" ");
+
+        if (output.size() < 1)
+        {
+            if (!handled && Functions.Match(cmd, "command"))
+            {
+                handled = true;
+                Reset();
+                output.add("Some response...");
+            }
+
+            if (!handled && Functions.Match(cmd, "plugin name help|plugin name ?"))
+            {
+                handled = true;
+                output.add("To view the plugin name help system, send me a private message: plugin name help");
+            }
+        }
+
+        return output;
+    };
+    public static ArrayList<String> ProcessPrivateMessage(String cmd)
+    {
+        ArrayList<String> output = new ArrayList<String>();
+        String[] arr = cmd.split(" ");
+
+        if (output.size() < 1)
+        {
+            if (Functions.Match(cmd, "plugin name help|plugin name ?"))
+            {
+                Reset();
+                output = Help(cmd);
+            }
+        }
+
+        return output;
+    };
+
+
+
+    /*    
+        ------------------------------------------------------------------------
+        Property GET/SET.
+    */
+};

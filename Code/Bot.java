@@ -1,4 +1,8 @@
 import org.jibble.pircbot.*;
+import java.io.*;
+import java.lang.ClassLoader.*;
+import java.lang.Object;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Random;
 
@@ -25,8 +29,6 @@ public class Bot extends PircBot
     private final int R_QUOT = 4;
     private final int R_TOR = 5;
 
-    private Chess clsChess;
-    private User clsUser;
     private Event clsEvent;
 
 
@@ -56,15 +58,15 @@ public class Bot extends PircBot
             sendMessage(channel, sOut);
         }
 
-        // Handle the modules
+        // Handle the plugins
         if (!handled)
         {
-            // Chess
-            if (output.size() < 1)
-            {
-                output = ClsChess().ProcessMessage(message);
-            }
+            output = CallPlugins("ProcessMessage", hostname, message);
+            if (output.size() > 0) handled = true;
+        }
 
+        if (handled)
+        {
             if (output.size() > 0)
             {
                 for (String s : output)
@@ -171,42 +173,6 @@ public class Bot extends PircBot
             }
         }
 
-        // Handle the modules
-        if (!handled)
-        {
-            // User
-            if (outputArr.size() < 1)
-            {
-                outputArr = ClsUser().ProcessMessage(login, hostname, message);
-            }
-
-            if (outputArr.size() > 0)
-            {
-                for (String s : outputArr)
-                {
-                    sendMessage(sender, s);
-                }
-            }
-        }
-
-        // Handle User modules
-        if (!handled)
-        {
-            // Events
-            if (outputArr.size() < 1)
-            {
-                outputArr = ClsEvent().ProcessMessage(sender, message);
-            }
-
-            if (outputArr.size() > 0)
-            {
-                for (String s : outputArr)
-                {
-                    sendMessage(sender, s);
-                }
-            }
-        }
-
         // Process message against the message logic
         if (!handled)
         {
@@ -217,6 +183,67 @@ public class Bot extends PircBot
                 sendMessage(sender, output);
             }
         }
+
+
+        // Handle the plugins
+        if (!handled)
+        {
+            outputArr = CallPlugins("ProcessPrivateMessage", hostname, message);
+            if (outputArr.size() > 0) handled = true;
+        }
+
+        if (handled)
+        {
+            if (outputArr.size() > 0)
+            {
+                for (String s : outputArr)
+                {
+                    sendMessage(sender, s);
+                }
+            }
+        }
+    };
+
+    // Handle the plugins
+    public ArrayList<String> CallPlugins(String methodName, String hostname, String message)
+    {
+        boolean handled = false;
+        ArrayList<String> output = new ArrayList<String>();
+
+        // Handle the plugins
+        String clsName = "";
+        Method method = null;
+        ClassLoader classLoader = this.getClass().getClassLoader();
+
+        try
+        {
+            // Iterate through the plugins dir
+            File[] files = new File("Plugins").listFiles();
+            for (File file : files)
+            {
+                if (!file.isDirectory() && file.getName().indexOf(".class") >= 0)
+                {
+                    clsName = file.getName().replace(".class", "");
+
+                    // Call any found class' ProcessMessage(message) function
+                    // assigning the results to the output List
+                    method = classLoader.loadClass(clsName).getMethod(methodName, new Class[] { String.class });
+                    output = (ArrayList<String>)method.invoke(null, new Object[] { hostname, message });
+
+                    if (output.size() > 0)
+                    {
+                        handled = true;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return output;
     };
 
 
@@ -386,22 +413,6 @@ public class Bot extends PircBot
             handled = true;
         }
 
-        if (!handled)
-        {
-            sendMessage(sender,
-                "For help, use one of the following: "
-            );
-            sendMessage(sender, "help quote");
-            sendMessage(sender, "help insult");
-            sendMessage(sender, "help toret");
-            sendMessage(sender, "help response");
-            sendMessage(sender, "help keyword");
-            sendMessage(sender, "help alias");
-            sendMessage(sender, "help links");
-            handled = true;
-        }
-
-
         return handled;
     };
 
@@ -414,19 +425,14 @@ public class Bot extends PircBot
     public void ActiveChannel(boolean value) { activeChannel = value; }
     public boolean ActiveChannel() { return activeChannel; }
 
+    /*
     public Chess ClsChess()
     {
         if (clsChess == null) clsChess = new Chess();
 
         return clsChess;
     }
-
-    public User ClsUser()
-    {
-        if (clsUser == null) clsUser = new User();
-
-        return clsUser;
-    }
+    */
 
     public Event ClsEvent()
     {
